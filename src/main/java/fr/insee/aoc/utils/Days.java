@@ -31,7 +31,7 @@ public class Days {
 	public static IntStream streamOfInt(String input) {
 		return streamOfLines(input).mapToInt(Integer::parseInt);
 	}
-	
+
 	public static <T> Stream<T> streamOfCells(T[][] array) {
 		return Arrays.stream(array).flatMap(Arrays::stream);
 	}
