@@ -1,12 +1,11 @@
 package fr.insee.aoc.days;
 
 import static fr.insee.aoc.utils.Days.listOfLines;
+import static fr.insee.aoc.utils.Days.readLine;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.counting;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 import fr.insee.aoc.utils.DayException;
 
@@ -14,63 +13,52 @@ public class Day02 implements Day {
 
 	@Override
 	public String part1(String input, Object... params) {
-        List<String> strings = listOfLines(input);
-        long a = numberOfStringsNTimes(strings, 2);
-        long b = numberOfStringsNTimes(strings, 3);
-        return String.valueOf(a * b);
+        int[] table = readTable(input);
+        if(params.length == 2) table = initializeTable(table, (int) params[0], (int) params[1]);
+        return String.valueOf(output(table));
     }
 
     @Override
-	public String part2(String input, Object... params) {
-        List<String> strings = listOfLines(input);
-        for (int i = 0; i < strings.size(); i++) {
-            String a = strings.get(i);
-            for (int j = i + 1; j < strings.size(); j++) {
-                if (differsByOneChar(a, strings.get(j))) {
-                    return charsInCommon(a, strings.get(j));
-                }
+    public String part2(String input, Object... params) {
+        int[] table = readTable(input);
+	    int output = (int) params[0];
+	    for(int noun = 0; noun < 100; noun ++) {
+            for(int verb = 0; verb < 100; verb ++) {
+                int[] initializedTable = initializeTable(table, noun, verb);
+                if(output(initializedTable) == output) return String.valueOf(100 * noun + verb);
             }
+        }
+	    throw new DayException();
+    }
+
+    private static int output(int[] table) {
+        int index = 0;
+        while (index < table.length) {
+            switch (table[index]) {
+                case 1:
+                    table[table[index + 3]] = table[table[index + 1]] + table[table[index + 2]];
+                    break;
+                case 2:
+                    table[table[index + 3]] = table[table[index + 1]] * table[table[index + 2]];
+                    break;
+                case 99:
+                    return table[0];
+                default:
+                    throw new DayException();
+            }
+            index += 4;
         }
         throw new DayException();
     }
-	
-    private long numberOfStringsNTimes(List<String> strings, int n) {
-        return strings.stream()
-                .map(this::occurences)
-                .filter(o -> containsSameCharacter(o, n))
-                .count();
+
+    private static int[] readTable(String input) {
+        return Arrays.stream(readLine(input).split(",")).mapToInt(Integer::valueOf).toArray();
     }
 
-    private Map<Integer, Long> occurences(String string) {
-        return string.chars()
-                .boxed()
-                .collect(Collectors.groupingBy(identity(), counting()));
-    }
-
-    private boolean containsSameCharacter(Map<Integer, Long> occurences, int numberOfOccurences) {
-        return occurences.values().contains((long) numberOfOccurences);
-    }
-
-    private boolean differsByOneChar(String a, String b) {
-        int compteur = 0;
-        for (int i = 0; i < a.length(); i++) {
-            if (a.charAt(i) != b.charAt(i)) {
-                compteur++;
-                if (compteur > 1) {
-                    return false;
-                }
-            }
-        }
-        return compteur == 1;
-    }
-
-    private String charsInCommon(String a, String b) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < a.length(); i++) {
-            if (a.charAt(i) == b.charAt(i)) {
-                sb.append(a.charAt(i));
-            }
-        }
-        return sb.toString();
+    private static int[] initializeTable(int[] table, int noun, int verb) {
+	    int[] initializedTable = Arrays.copyOf(table, table.length);
+        initializedTable[1] = noun;
+        initializedTable[2] = verb;
+        return initializedTable;
     }
 }
