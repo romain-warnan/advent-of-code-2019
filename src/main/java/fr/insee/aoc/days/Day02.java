@@ -1,9 +1,6 @@
 package fr.insee.aoc.days;
 
-import static fr.insee.aoc.utils.Days.listOfLines;
 import static fr.insee.aoc.utils.Days.readLine;
-import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.counting;
 
 import java.util.Arrays;
 

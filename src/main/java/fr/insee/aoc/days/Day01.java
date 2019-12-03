@@ -3,9 +3,6 @@ package fr.insee.aoc.days;
 import static fr.insee.aoc.utils.Days.*;
 import static java.lang.Math.*;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class Day01 implements Day {
 
 	@Override

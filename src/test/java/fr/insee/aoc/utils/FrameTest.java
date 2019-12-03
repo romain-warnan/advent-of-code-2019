@@ -3,6 +3,7 @@ package fr.insee.aoc.utils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -33,7 +34,57 @@ public class FrameTest  {
 			.hasFieldOrPropertyWithValue("left", -1)
 			.hasFieldOrPropertyWithValue("right", 2);
 	}
-	
+
+	@Test
+	public void testFrame_overlapping_same() {
+		Frame fA = Frame.frameOf(0, 3, 0, 2);
+		Frame fB = Frame.frameOf(0, 3, 0, 2);
+		Optional<Frame> frame = Frame.overlappingFrame(fA, fB);
+		assertThat(frame)
+			.isNotEmpty()
+			.get()
+			.hasFieldOrPropertyWithValue("top", 0)
+			.hasFieldOrPropertyWithValue("bottom", 3)
+			.hasFieldOrPropertyWithValue("left", 0)
+			.hasFieldOrPropertyWithValue("right", 2);
+	}
+
+	@Test
+	public void testFrame_overlapping_empty() {
+		Frame fA = Frame.frameOf(0, 3, 0, 2);
+		Frame fB = Frame.frameOf(0, 3, 10, 12);
+		Optional<Frame> frame = Frame.overlappingFrame(fA, fB);
+		assertThat(frame).isEmpty();
+	}
+
+	@Test
+	public void testFrame_overlapping_point() {
+		Frame fA = Frame.frameOf(0, 0, -5, 5);
+		Frame fB = Frame.frameOf(-5, 5, 0, 0);
+		Optional<Frame> frame = Frame.overlappingFrame(fA, fB);
+		assertThat(frame)
+				.isNotEmpty()
+				.get()
+				.hasFieldOrPropertyWithValue("top", 0)
+				.hasFieldOrPropertyWithValue("bottom", 0)
+				.hasFieldOrPropertyWithValue("left", 0)
+				.hasFieldOrPropertyWithValue("right", 0);
+	}
+
+	@Test
+	public void testFrame_overlapping_frame() {
+		Frame fA = Frame.frameOf(-1, 1, -5, 5);
+		Frame fB = Frame.frameOf(-5, 5, -1, 1);
+		Optional<Frame> frame = Frame.overlappingFrame(fA, fB);
+		assertThat(frame)
+				.isNotEmpty()
+				.get()
+				.hasFieldOrPropertyWithValue("top", -1)
+				.hasFieldOrPropertyWithValue("bottom", 1)
+				.hasFieldOrPropertyWithValue("left", -1)
+				.hasFieldOrPropertyWithValue("right", 1);
+	}
+
 	@Test
 	public void testFrame_isOnTheEdge() {
 		Point a = Point.of(-1, 1);

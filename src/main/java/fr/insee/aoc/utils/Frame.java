@@ -5,6 +5,7 @@ import static java.lang.Math.min;
 
 import java.util.Collection;
 import java.util.IntSummaryStatistics;
+import java.util.Optional;
 
 public class Frame {
 
@@ -40,6 +41,15 @@ public class Frame {
 		int top = statY.getMin();
 		int bottom = statY.getMax();
 		return frameOf(top, bottom, left, right);
+	}
+
+	public static Optional<Frame> overlappingFrame(Frame a, Frame b) {
+		if(a.top > b.bottom || a.bottom < b.top || a.left > b.right || a.right < b.left) return Optional.empty();
+		int left = max(a.left, b.left);
+		int right = min(a.right, b.right);
+		int top = max(a.top, b.top);
+		int bottom = min(a.bottom, b.bottom);
+		return Optional.of(frameOf(top, bottom, left, right));
 	}
 
 	public int width() {

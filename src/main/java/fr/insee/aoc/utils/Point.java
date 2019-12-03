@@ -5,6 +5,8 @@ import java.util.Objects;
 
 public class Point implements Comparable<Point> {
 
+	public static final Point ORIGIN = Point.of(0, 0);
+
 	protected int x;
 	protected int y;
 
@@ -28,6 +30,10 @@ public class Point implements Comparable<Point> {
 
 	public int manhattan(Point other) {
 		return Math.abs(this.x - other.x) + Math.abs(this.y - other.y);
+	}
+
+	public int manhattan() {
+		return manhattan(ORIGIN);
 	}
 
 	@Override
