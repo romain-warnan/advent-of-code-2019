@@ -5,6 +5,7 @@ import fr.insee.aoc.utils.DayException;
 
 import java.util.*;
 
+import static fr.insee.aoc.utils.Days.arrayOfInt;
 import static fr.insee.aoc.utils.Days.readLine;
 
 public class Day05 implements Day {
@@ -20,7 +21,7 @@ public class Day05 implements Day {
     }
 
     private String executeWithId(String input, int id) {
-        int[] table = Arrays.stream(readLine(input).split(",")).mapToInt(Integer::valueOf).toArray();
+        int[] table = arrayOfInt(input, ",");
         int position = 0;
         int code = 0;
         OpCode opCode;

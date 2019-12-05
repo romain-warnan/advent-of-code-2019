@@ -3,6 +3,7 @@ package fr.insee.aoc.days;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
+import static fr.insee.aoc.utils.Days.arrayOfLines;
 import static fr.insee.aoc.utils.Days.readLine;
 import static java.lang.Integer.parseInt;
 import static java.util.function.Function.*;
@@ -31,7 +32,7 @@ public class Day04 implements Day {
     }
 
     private static IntStream range(String input) {
-        String[] tokens = readLine(input).split("-");
+        String[] tokens = arrayOfLines(input, "-");
         int from = parseInt(tokens[0]);
         int to = parseInt(tokens[1]);
         return IntStream.range(from, to);

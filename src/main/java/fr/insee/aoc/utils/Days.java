@@ -28,8 +28,16 @@ public class Days {
 		throw new DayException("Erreur dans la lecture du fichier");
 	}
 
+	public static Stream<String> streamOfLines(String input, String regex) {
+		return Arrays.stream(readLine(input).split(regex));
+	}
+
 	public static IntStream streamOfInt(String input) {
 		return streamOfLines(input).mapToInt(Integer::parseInt);
+	}
+
+	public static IntStream streamOfInt(String input, String regex) {
+		return streamOfLines(input, regex).mapToInt(Integer::valueOf);
 	}
 
 	public static <T> Stream<T> streamOfCells(T[][] array) {
@@ -52,16 +60,32 @@ public class Days {
 		return streamOfLines(input).collect(toList());
 	}
 
+	public static List<String> listOfLines(String input, String regex) {
+		return streamOfLines(input, regex).collect(toList());
+	}
+
 	public static List<Integer> listOfIntegers(String input) {
 		return streamOfInt(input).boxed().collect(toList());
+	}
+
+	public static List<Integer> listOfIntegers(String input, String regex) {
+		return streamOfInt(input, regex).boxed().collect(toList());
 	}
 
 	public static String[] arrayOfLines(String input) {
 		return streamOfLines(input).toArray(String[]::new);
 	}
 
+	public static String[] arrayOfLines(String input, String regex) {
+		return streamOfLines(input, regex).toArray(String[]::new);
+	}
+
 	public static int[] arrayOfInt(String input) {
 		return streamOfInt(input).toArray();
+	}
+
+	public static int[] arrayOfInt(String input, String regex) {
+		return streamOfInt(input, regex).toArray();
 	}
 
 	public static char[][] tableOfChars(String input) {
