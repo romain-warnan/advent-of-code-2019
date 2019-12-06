@@ -2,6 +2,8 @@ package fr.insee.aoc.days;
 
 import fr.insee.aoc.utils.DayException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static fr.insee.aoc.utils.Days.*;
@@ -21,7 +23,7 @@ public class Day06 implements Day {
         Set<Orbit> orbits = buildOrbits(input);
         Orbit start = findOrbit("YOU", orbits).axe;
         Orbit end = findOrbit("SAN", orbits).axe;
-
+        List<Orbit> parents = start.parentAxes();
         return null;
     }
 
@@ -54,6 +56,17 @@ public class Day06 implements Day {
             orbit.name = name;
             orbit.axeName = axeName;
             return orbit;
+        }
+
+        private List<Orbit> parentAxes(List<Orbit> parentAxes) {
+            if(axe != null) {
+                parentAxes.addAll(axe.parentAxes(parentAxes));
+            }
+            return parentAxes;
+        }
+
+        List<Orbit> parentAxes() {
+            return parentAxes(new ArrayList<>());
         }
 
         int numberOfOrbits() {
