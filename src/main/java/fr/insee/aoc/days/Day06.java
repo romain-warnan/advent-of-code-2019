@@ -21,10 +21,11 @@ public class Day06 implements Day {
     @Override
     public String part2(String input, Object... params) {
         Set<Orbit> orbits = buildOrbits(input);
-        Orbit start = findOrbit("YOU", orbits).axe;
-        Orbit end = findOrbit("SAN", orbits).axe;
-        List<Orbit> parents = start.parentAxes();
-        return null;
+        List<Orbit> axesYou = findOrbit("YOU", orbits).parentAxes();
+        List<Orbit> axesSan = findOrbit("SAN", orbits).parentAxes();
+        Orbit commonAxe = axesYou.stream().filter(axesSan::contains).findFirst().orElseThrow(DayException::new);
+        int numberOfOrbitalTransfers = axesSan.indexOf(commonAxe) + axesYou.indexOf(commonAxe);
+        return String.valueOf(numberOfOrbitalTransfers);
     }
 
     private static Set<Orbit> buildOrbits(String input) {
@@ -58,15 +59,14 @@ public class Day06 implements Day {
             return orbit;
         }
 
-        private List<Orbit> parentAxes(List<Orbit> parentAxes) {
-            if(axe != null) {
-                parentAxes.addAll(axe.parentAxes(parentAxes));
+        List<Orbit> parentAxes() {
+            List<Orbit> parentAxes = new ArrayList<>();
+            Orbit parentAxe = this.axe;
+            while(parentAxe != null) {
+                parentAxes.add(parentAxe);
+                parentAxe = parentAxe.axe;
             }
             return parentAxes;
-        }
-
-        List<Orbit> parentAxes() {
-            return parentAxes(new ArrayList<>());
         }
 
         int numberOfOrbits() {
