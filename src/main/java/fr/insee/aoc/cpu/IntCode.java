@@ -19,8 +19,8 @@ public class IntCode {
         return new IntCode(inputs);
     }
 
-    public int execute(int[] program, boolean restart) {
-        int[] instructions = restart ? Arrays.copyOf(program, program.length) : program;
+    public int execute(int[] program) {
+        int[] instructions = Arrays.copyOf(program, program.length);
         int position = 0;
         int code = 0;
         OpCode opCode;
@@ -31,16 +31,8 @@ public class IntCode {
         return code;
     }
 
-    public int execute(int[] program) {
-        return execute(program, true);
-    }
-
-    public int execute(String program, boolean restart) {
-        return execute(arrayOfInt(program, ","), restart);
-    }
-
     public int execute(String program) {
-        return execute(program, true);
+        return execute(arrayOfInt(program, ","));
     }
 
     private OpCode readOpCode(int position, int[] table) {
