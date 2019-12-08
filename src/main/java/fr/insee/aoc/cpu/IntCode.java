@@ -31,10 +31,6 @@ public class IntCode {
         return code;
     }
 
-    public int execute(String program) {
-        return execute(arrayOfInt(program, ","));
-    }
-
     private OpCode readOpCode(int position, int[] table) {
         String input = String.valueOf(table[position]);
         if(input.length() < 2) {
@@ -49,7 +45,7 @@ public class IntCode {
         switch (code) {
             case "01": return new Add(position, table, modes);
             case "02": return new Multiply(position, table, modes);
-            case "03": return new Input(position, table, modes, inputs[index++ % inputs.length]);
+            case "03": return new Input(position, table, modes, inputs[index++]);
             case "04": return new Output(position, table, modes);
             case "05": return new JumpIfTrue(position, table, modes);
             case "06": return new JumpIfFalse(position, table, modes);
