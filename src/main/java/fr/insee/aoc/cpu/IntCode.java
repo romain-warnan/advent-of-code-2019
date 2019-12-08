@@ -19,8 +19,8 @@ public class IntCode {
         return new IntCode(inputs);
     }
 
-    public int execute(int[] program) {
-        int[] instructions = Arrays.copyOf(program, program.length);
+    public int execute(int[] program, boolean restart) {
+        int[] instructions = restart ? Arrays.copyOf(program, program.length) : program;
         int position = 0;
         int code = 0;
         OpCode opCode;
@@ -31,8 +31,16 @@ public class IntCode {
         return code;
     }
 
+    public int execute(int[] program) {
+        return execute(program, true);
+    }
+
+    public int execute(String program, boolean restart) {
+        return execute(arrayOfInt(program, ","), restart);
+    }
+
     public int execute(String program) {
-        return execute(arrayOfInt(program, ","));
+        return execute(program, true);
     }
 
     private OpCode readOpCode(int position, int[] table) {
@@ -49,7 +57,7 @@ public class IntCode {
         switch (code) {
             case "01": return new Add(position, table, modes);
             case "02": return new Multiply(position, table, modes);
-            case "03": return new Input(position, table, modes, inputs[index++]);
+            case "03": return new Input(position, table, modes, inputs[index++ % inputs.length]);
             case "04": return new Output(position, table, modes);
             case "05": return new JumpIfTrue(position, table, modes);
             case "06": return new JumpIfFalse(position, table, modes);
