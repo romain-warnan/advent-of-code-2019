@@ -1,5 +1,6 @@
 package fr.insee.aoc.utils;
 
+import static java.lang.Math.*;
 import static java.util.Spliterators.*;
 import static java.util.stream.StreamSupport.*;
 
@@ -139,4 +140,28 @@ public class Days {
 	public static int minOf(int[] array) {
 		return Arrays.stream(array).min().getAsInt();
 	}
+
+	public static int[] swap(int[] array, int i, int j) {
+	    int element = array[i];
+	    array[i] = array[j];
+	    array[j] = element;
+	    return array;
+    }
+
+    public static List<int[]> permutations(int[] array) {
+        List<int[]> permutations = new ArrayList<>((int) pow(2, array.length));
+        permute(array, 0, permutations);
+        return permutations;
+    }
+
+    private static void permute(int[] array, int k, List<int[]> arrays){
+        for(int i = k; i < array.length; i++){
+            swap(array, i, k);
+            permute(array, k+1, arrays);
+            swap(array, k, i);
+        }
+        if (k == array.length - 1){
+            arrays.add(Arrays.copyOf(array, array.length));
+        }
+    }
 }
