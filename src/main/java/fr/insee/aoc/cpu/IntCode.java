@@ -2,33 +2,57 @@ package fr.insee.aoc.cpu;
 
 import fr.insee.aoc.utils.DayException;
 
-import java.util.Arrays;
+import java.util.*;
 
-import static fr.insee.aoc.utils.Days.arrayOfInt;
+import static java.util.Collections.*;
 
 public class IntCode {
 
-    private int[] inputs;
-    private int index = 0;
+    private List<Integer> inputs = new ArrayList<>();
+    private Deque<Integer> outputs = new ArrayDeque<>();
+    private int indexOfInput = 0;
+    private boolean waitingForInput = false;
+    private int position = 0;
+    private int[] program;
 
-    private IntCode(int... inputs) {
-        this.inputs = inputs;
+    public IntCode(int[] program, int... inputs) {
+        this.program = Arrays.copyOf(program, program.length);
+        Arrays.stream(inputs).boxed().forEach(this.inputs::add);
     }
 
-    public static IntCode withInputs(int... inputs) {
-        return new IntCode(inputs);
-    }
-
-    public int execute(int[] program) {
-        int[] instructions = Arrays.copyOf(program, program.length);
-        int position = 0;
-        int code = 0;
+    public Integer execute() {
         OpCode opCode;
-        while((opCode = readOpCode(position, instructions)) != null) {
-            code = opCode.apply();
-            position = opCode.nextPosition();
+        while((opCode = readOpCode(position, program)) != null && !waitingForInput) {
+            opCode.apply();
+            if(!waitingForInput) {
+                position = opCode.nextPosition();
+            }
         }
-        return code;
+        return outputs.peekLast();
+    }
+
+    public void sendInput(List<Integer> inputs) {
+        this.inputs.addAll(inputs);
+        waitingForInput = false;
+    }
+
+    public void sendInput(int input) {
+        sendInput(singletonList(input));
+    }
+
+    public List<Integer> pollOutput() {
+        List<Integer> out = new ArrayList<>();
+        out.addAll(outputs);
+        outputs.clear();
+        return out;
+    }
+
+    public List<Integer> getInputs() {
+        return inputs;
+    }
+
+    public Deque<Integer> getOutputs() {
+        return outputs;
     }
 
     private OpCode readOpCode(int position, int[] table) {
@@ -45,7 +69,7 @@ public class IntCode {
         switch (code) {
             case "01": return new Add(position, table, modes);
             case "02": return new Multiply(position, table, modes);
-            case "03": return new Input(position, table, modes, inputs[index++]);
+            case "03": return new Input(position, table, modes);
             case "04": return new Output(position, table, modes);
             case "05": return new JumpIfTrue(position, table, modes);
             case "06": return new JumpIfFalse(position, table, modes);
@@ -73,23 +97,24 @@ public class IntCode {
             return table[mode ? position + index : table[position + index]];
         }
 
-        abstract int apply();
+        abstract void apply();
         abstract int nextPosition();
     }
 
-    static class Input extends OpCode {
+    class Input extends OpCode {
 
-        int id;
-
-        Input(int position, int[] table, boolean[] modes, int id) {
+        Input(int position, int[] table, boolean[] modes) {
             super(position, table, modes);
-            this.id = id;
         }
 
         @Override
-        public int apply() {
-            table[table[position + 1]] = id;
-            return 0;
+        public void apply() {
+            if(indexOfInput < inputs.size()) {
+                table[table[position + 1]] = inputs.get(indexOfInput++);
+            }
+            else {
+                waitingForInput = true;
+            }
         }
 
         @Override
@@ -98,15 +123,15 @@ public class IntCode {
         }
     }
 
-    static class Output extends OpCode {
+    class Output extends OpCode {
 
         Output(int position, int[] table, boolean[] modes) {
             super(position, table, modes);
         }
 
         @Override
-        public int apply() {
-            return val(1);
+        public void apply() {
+            outputs.add(val(1));
         }
 
         @Override
@@ -122,9 +147,8 @@ public class IntCode {
         }
 
         @Override
-        public int apply() {
+        public void apply() {
             table[table[position + 3]] = val(1) * val(2);
-            return 0;
         }
 
         @Override
@@ -140,9 +164,8 @@ public class IntCode {
         }
 
         @Override
-        public int apply() {
+        public void apply() {
             table[table[position + 3]] = val(1) + val(2);
-            return 0;
         }
 
         @Override
@@ -160,12 +183,11 @@ public class IntCode {
         }
 
         @Override
-        public int apply() {
+        public void apply() {
             if(val(1) != 0) {
                 table[position] = val(2);
                 this.hasJumped = true;
             }
-            return 0;
         }
 
         @Override
@@ -183,12 +205,11 @@ public class IntCode {
         }
 
         @Override
-        public int apply() {
+        public void apply() {
             if(val(1) == 0) {
                 table[position] = val(2);
                 this.hasJumped = true;
             }
-            return 0;
         }
 
         @Override
@@ -204,9 +225,8 @@ public class IntCode {
         }
 
         @Override
-        public int apply() {
+        public void apply() {
             table[table[position + 3]] = val(1) < val(2) ? 1 : 0;
-            return 0;
         }
 
         @Override
@@ -222,9 +242,8 @@ public class IntCode {
         }
 
         @Override
-        public int apply() {
+        public void apply() {
             table[table[position + 3]] = val(1) == val(2) ? 1 : 0;
-            return 0;
         }
 
         @Override

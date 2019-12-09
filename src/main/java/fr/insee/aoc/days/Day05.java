@@ -8,12 +8,14 @@ public class Day05 implements Day {
 	@Override
 	public String part1(String input, Object... params) {
 	    int[] program = Days.arrayOfInt(input, ",");
-        return String.valueOf(IntCode.withInputs(1).execute(program));
+        IntCode intCode = new IntCode(program, 1);
+        return String.valueOf(intCode.execute());
     }
 
 	@Override
 	public String part2(String input, Object... params) {
         int[] program = Days.arrayOfInt(input, ",");
-        return String.valueOf(IntCode.withInputs(5).execute(program));
+        IntCode intCode = new IntCode(program, 5);
+        return String.valueOf(intCode.execute());
     }
 }
