@@ -139,4 +139,8 @@ public class Days {
 	public static int minOf(int[] array) {
 		return Arrays.stream(array).min().getAsInt();
 	}
+
+	public static int charToInt(int c) {
+		return c - 48;
+	}
 }
